@@ -5,7 +5,16 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Joachim Janz</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RZ7KNSSS0D"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-RZ7KNSSS0D');
+</script>
+    <title>Personal Webpage of Joachim Janz</title>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet">
@@ -28,13 +37,13 @@
                 <a href="#about">About</a>
             </li>
             <li>
+                <a href="#projects">Projects</a>
+            </li>
+           <li>
                 <a href="#experience">Experience</a>
             </li>
             <li>
                 <a href="#education">Education</a>
-            </li>
-            <li>
-                <a href="#projects">Projects</a>
             </li>
             <li>
                 <a href="#skills">Skills</a>
@@ -69,13 +78,23 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h2 class="heading">About Me</h2>
+                    <h2 class="heading">&nbsp;&nbsp;About Me&nbsp;&nbsp;</h2><br>
+                    <img src="images/Joachim_utu.jpg" />
                 </div>
                 <div class="col-md-8">
+                    <br><br>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat. Donec
-                        eu vehicula neque. Donec viverra lorem nunc, tempus euismod eros sollicitudin ut. Quisque et tincidunt libero. Donec id pharetra justo. Proin euismod lacinia dolor, eu scelerisque justo tempus pharetra. Vivamus nunc justo, finibus
-                        ut nisl sed, euismod rhoncus nulla. Proin sed magna egestas, egestas ante et, congue eros. In consequat, mauris dapibus tincidunt suscipit, ex libero aliquet diam, at maximus risus enim non leo.
+                        I am a scientist by education. My career in astronomy trained me to solve problems
+                        rigorously and with an analytic approach.</p><p> Most commonly I use <tt>python</tt> and <tt>C++</tt>
+                        as my tools. For observational data I regularly develop data processing pipelines,
+                        most recently for the Euclid mission of the European space agency.
+                        The adaptation of additional languages and tools in my work are a testament to my
+                        quick learning abilities. </p><p> I gained ample experience with procuring data and interpreting
+                        them using statistical and other methods. For the data collection I became skilful in 
+                        communicating goals to observing time committees of the largest telescopes, as well as in finding
+                        and processing available data.</p><p> 
+                        I contributed to the work of international teams, supervised students, and taught university courses.
+                        Examples of my work (as well as personal interests) can be found below.
                     </p>
                 </div>
             </div>
@@ -84,20 +103,22 @@
     <!-- End #about -->
 
     <div id="projects" class="background-alt">
-        <h2 class="heading">Projects</h2>
+        <h2 class="heading">Recent selected projects</h2>
         <div class="container">
             <div class="row">
                 <div class="project shadow-large">
                     <div class="project-image">
-                        <img src="images/project.jpg" />
+                        <img src="images/fds.jpg" />
                     </div>
                     <!-- End .project-image -->
                     <div class="project-info">
-                        <h3>Project Name Here</h3>
+                        <h3>Google Maps-like interface for galaxy cluster data</h3>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat.
+                            In our EU Horizons 2020 international training network <a href="https://www.astro.rug.nl/~sundial/index.html" target="_new">SUNDIAL</a>
+                            we collected unprecedented images of the Fornax galaxy cluster. To help our collaboration to explore the data set and maximise its use,
+                            I am running a web-server with a Google Maps-like interface. The map interface can be also accessed by the general public view the link below.
                         </p>
-                        <a href="#">View Project</a>
+                        <a href="https://fds.oulu.fi" target="_new">View Fornax cluster map</a>
                     </div>
                     <!-- End .project-info -->
                 </div>
@@ -105,19 +126,48 @@
 
                 <div class="project shadow-large">
                     <div class="project-image">
-                        <img src="images/project.jpg" />
+                        <img src="images/covid19-cdc.jpg" />
                     </div>
                     <!-- End .project-image -->
                     <div class="project-info">
-                        <h3>Project Name Here</h3>
+                        <h3>Virtual Classroom</h3>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat.
+                            During the COVID-19 pandemia, we had to organise our Astronomy teaching remotely. While the 'Zoom' Classroom
+                            worked out for teacher-centred instructions, I did not see it suitable for my programming course. For more 
+                            interactivity I ran a <tt>jupyter hub</tt> (in a <tt>docker</tt> container) and virtual dockerised access points
+                            for the students. Custom <tt>jupyter</tt> line and cell magics allowed to submit and review pieces of code.
+                            This way we could code interactively together in addition to the video link.
                         </p>
-                        <a href="#">View Project</a>
+                        <a href="#contact">Details available on request</a>
+<p>                     Image credit: Alissa Eckert, MSMI; Dan Higgins, MAMS</p>   
                     </div>
                     <!-- End .project-info -->
                 </div>
                 <!-- End .project -->
+
+                <div class="project shadow-large">
+                    <div class="project-image">
+                        <img src="images/schnee_p.jpg" />
+                    </div>
+                    <!-- End .project-image -->
+                    <div class="project-info">
+                        <h3>Hard- and software for photomacrography</h3>
+                        <p>
+                            To image tiny things I built a custom setup for a DSLR. The optics are largely based on
+                            a microscope objective on bellows, which offers sufficient resolution. LED rings are used
+                            for lighting allowing for dark and bright field illumination as well as special phase contrast
+                            and Rheinberg setups. The razor thin depth-of-field is conquered by focus stacking and the camera
+                            being mounted on an industrial linear actuator with a stepper motor. A custom PCB with an ESP32
+                            orchestrates the positioning and exposing of the camera. This all can be controlled via a web-interface
+                            via a WIFI access point.
+                        </p>
+                        <a href="#contact">Contact me if you are interested in the ESP32 firmware or the PCB</a>
+                    </div>
+                    <!-- End .project-info -->
+                </div>
+                <!-- End .project -->
+
+                
             </div>
         </div>
     </div>
@@ -125,60 +175,139 @@
     <div id="experience" class="background-alt">
         <h2 class="heading">Experience</h2>
         <div id="experience-timeline">
-            <div data-date="September 2015 – September 2016">
-                <h3>Employer Name</h3>
-                <h4>Job Title</h4>
+            <div data-date="September 2017 – December 2020" data-place="Turku & Oulu, Finland">
+                <h3>Finnish Centre for Astronomy with ESO (FINCA) / University of Turku</h3>
+                <h4>FINCA Postdoctoral Fellow</h4>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat.
+                   I collaborated with  ESA's Euclid mission by developing two image processing pipelines 
+                   (running within the Euclid infrastructure, development with <tt>git</tt> source control and CI/CD).
+                   I contributed to the University's education with two regular and several block courses,
+                   and supervised students (from Bachelor to PhD level).
+                   In collaboration with a PhD student in Groningen, the Netherlands, we applied machine
+                   learning techniques to identify a certain type of galaxies in imaging data.
                 </p>
             </div>
 
-            <div data-date="September 2015 – September 2016">
-                <h3>Employer Name</h3>
-                <h4>Job Title</h4>
+            <div data-date="January 2014 - December 2016"  data-place="Melbourne, Australia">
+                <h3>Swinburne University of Technology</h3>
+                <h4>Senior Postdoctoral Fellow</h4>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat.
+                  I started new collaborations and developed my standing as an independent scientist.
+                  I was awarded observing time with the 10m Keck telescope and dived into spectroscopy.
+                  I also supervised a summer student and led the group meetings in absence of Prof. Forbes.
                 </p>
             </div>
 
-            <div data-date="September 2015 – September 2016">
-                <h3>Employer Name</h3>
-                <h4>Job Title</h4>
+            <div data-date="January 2013 - December 2013"  data-place="Oulu, Finland">
+                    <h3>University of Oulu</h3>
+                <h4>Postdoctoral Research Assistant</h4>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat.
+                    I learned about and applied N-body simulations (implementing additional fixed
+                    potentials to GADGET, a <tt>C</tt> simulation code). I helped developing visualisation
+                    tools (in <tt>IDL</tt>) for the fitting of two-dimensional multi-component models to
+                    the light distribution of galaxies. 
                 </p>
             </div>
+<!--
+    <i><a href="https://wwwstaff.ari.uni-heidelberg.de/lisker/dwarfgalaxies/smakced/index.html" target="_new">SMAKCED</a></i> project
+with <tt>mySQL</tt> and <tt>php</tt>)
+-->
+            <div data-date="August 2009 - January 2013"  data-place="Heidelberg, Germany & Oulu, Finland">
+                <h3>Universities of Heidelberg and Oulu</h3>
+                <h4>PhD student</h4>
+                <ul>
+                    <il>I led the near-infrared imaging part of the <a href="https://wwwstaff.ari.uni-heidelberg.de/lisker/dwarfgalaxies/smakced/members.html" target="_new">SMAKCED</a> project (15 international team members) -</il>
+                    <il>The coordination of the observing campaign at observatories in La Palmas and Chile
+                        was significantly helped by  my custom <tt>mySQL</tt> database and corresponding web-interface.</il>
+                    <il>I obtained several grants including 2 years of funding by the Daimler-Benz foundation </il>
+                </ul>
+                <p></p>
+            </div>
+
+            <div data-date="Summer 2002"  data-place="Walldorf, Germany">
+                <h3>SAP</h3>
+                <h4>Summer job</h4>
+                <p>
+                    I incorporated a data set of several 1000s of entries into an internal database.
+                </p>
+            </div>
+
         </div>
     </div>
     <!-- End #experience -->
 
     <div id="education">
-        <h2 class="heading">Education</h2>
+        <h2 class="heading">Education & Degrees</h2>
         <div class="education-block">
-            <h3>University of Ottawa</h3>
-            <span class="education-date">Sept 2016 - Sept 2017</span>
-            <h4>Bachelor of Science in Computer Science</h4>
+            <h3>University of Oulu, Finland</h3>
+            <span class="education-date">July 2020</span>
+            <h4>Title of Docent</h4>
+            <ul>
+                <li>Best possible grade</li>
+            </ul>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in iaculis ex. Etiam volutpat laoreet urna. Morbi ut tortor nec nulla commodo malesuada sit amet vel lacus. Fusce eget efficitur libero. Morbi dapibus porta quam laoreet placerat.
+                In recognition of my scientific achievements (in total leading to 43 publications with >1100 citations) 
+                after the PhD degree and, in particular, my qualifications in teaching. 
+            </p>
+            <p>
+                At the University of Oulu I taught the regular courses <i>Galaxies</i> and <i>Research Project I</i> (here in particular the usage of computers
+                and programming in <tt>python</tt> as a tool for scientists), as well as block courses on <tt>python</tt> and <tt>mySQL</tt>.
+                I co-supervise two PhD students, and I supervised a Bachelor student as well as two summer students.
+            </p>
+        </div>
+  
+  
+        <div class="education-block">
+            <h3>Universities of Oulu, Finland, and Heidelberg, Germany</h3>
+            <span class="education-date">2009 - 2013</span>
+            <h4>PhD in Astronomy</h4>
+            <ul>
+                <li>
+                    Thesis  <a href="The puzzling nature of dwarf-sized gas poor disk galaxies" target="_new"><i>The puzzling nature of dwarf-sized gas poor disk galaxies</i></a>                    
+                </li>
+                <li><i>magna cum laude</i></li>
+                <li>
+                    Prof. Heikki Salo, Dos. Eija Laurikainen, Priv.-Doz. Dr. Thorsten Lisker)
+                </li>
+                <li>Double PhD degree shared between the Universities of Oulu and Heidelberg</li>
+            </ul>
+            <p>
+                I led the near-infrared imaging part of the <a href="https://wwwstaff.ari.uni-heidelberg.de/lisker/dwarfgalaxies/smakced/members.html" target="_new">SMAKCED</a> project.
+                I also instructed peers to prepare and carry out the observations. 
+                For the data reduction I developed my own code (<tt>bash</tt> and <tt>IRAF</tt> based for NIR imaging,
+                and <tt>C</tt>-based for spectroscopy).
+            </p>
+        </div>
+        
+        <div class="education-block">
+            <h3>University of  Heidelberg, Germany</h3>
+            <span class="education-date">2004 - 2008</span>
+            <h4>Master of Science in Physics</h4>
+            <ul>
+                <li>
+                    Mathematics as minor subject
+                </li>
+                <li>
+                    Thesis on scaling relations of early-type galaxies (best possible grade, Priv.-Doz. Dr. Thorsten Lisker)
+                </li>
+            </ul>
+            <p>
+                German <i>Diplom</i>, German equivalent to the Master before the Bologna process.
             </p>
         </div>
         <!-- End .education-block -->
 
         <div class="education-block">
-            <h3>University of Ottawa</h3>
-            <span class="education-date">Sept 2016 - Sept 2017</span>
-            <h4>Bachelor of Science in Computer Science</h4>
+            <h3>University of Heidelberg, Germany</h3>
+            <span class="education-date">2002 - 2004</span>
+            <h4>Bachelor of Science in Mathematics</h4>
             <ul>
                 <li>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </li>
-                <li>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </li>
-                <li>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Computer science as minor subject.
                 </li>
             </ul>
+            <h4>Bachelor of Science in Physics</h4>           
+                   <p>Two German <i>Vordiplom</i>, German equivalents to the Bachelor before the Bologna process.</p> 
         </div>
         <!-- End .education-block -->
     </div>
@@ -186,34 +315,20 @@
     <!-- End #education -->
 
     <div id="skills">
-        <h2 class="heading">Skills</h2>
+        <h2 class="heading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Skills&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>
         <ul>
-            <li>JavaScript</li>
+            <li>Data analysis</li>
+            <li>Modelling</li>
+            <li>Visualisation</li>
             <li>Python</li>
-            <li>Ruby</li>
-            <li>Go</li>
-            <li>Node.js</li>
-            <li>AngularJs</li>
-            <li>React</li>
-            <li>Elixir</li>
-            <li>Java</li>
-            <li>C</li>
-            <li>C#</li>
+            <li>Jupyter</li>
             <li>C++</li>
-            <li>Ruby on Rails</li>
-            <li>JavaScript</li>
-            <li>Python</li>
-            <li>Ruby</li>
-            <li>Go</li>
-            <li>Node.js</li>
-            <li>AngularJs</li>
-            <li>React</li>
-            <li>Elixir</li>
-            <li>Java</li>
-            <li>C</li>
-            <li>C#</li>
-            <li>C++</li>
-            <li>Ruby on Rails</li>
+            <li>SQL</li>
+            <li>OpenCV</li>
+            <li>gnuplot</li>
+            <li>LaTeX</li>
+            <li>macOS</li>
+            <li>Linux</li>            
         </ul>
     </div>
     <!-- End #skills -->
@@ -248,14 +363,14 @@
                 <div class="col-sm-5 social">
                     <ul>
                         <li>
-                            <a href="https://github.com/" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+                            <a href="https://github.com/joxda/" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
                         </li>
                         <!--<li>
                             <a href="https://stackoverflow.com/" target="_blank"><i class="fa fa-stack-overflow" aria-hidden="true"></i></a>
                         </li>-->
-                        <li>
+                        <!--<li>
                             <a href="https://linkedin.com/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-                        </li>
+                        </li>-->
                         <!--<li>
                             <a href="https://www.facebook.com/" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
                         </li>
@@ -273,7 +388,7 @@
     <!-- End footer -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="js/scripts.min.js"></script>
+    <script src="js/scripts.js"></script>
 </body>
 
 </html>

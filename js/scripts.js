@@ -69,11 +69,11 @@
         // Add dates to the timeline if exists
         $this.find('.vtimeline-content').each(function() {
             var date = $(this).data('date');
+            var place = $(this).data('place');
             if (date) { // Prepend if exists
-                $(this).parent().prepend('<span class="vtimeline-date">'+date+'</span>');
+                $(this).parent().prepend('<span class="vtimeline-date">'+date+'<br>'+place+'</span>');
             }
         });
-
     });
 
     // Open mobile menu

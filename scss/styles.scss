@@ -330,7 +330,7 @@ footer {
         content: '';
         top: 100%;
         height: 1px;
-        width: 50px;
+        width: 150px;
         left: 0;
         right: 0;
         margin: 0 auto;
@@ -460,6 +460,8 @@ footer {
     p {
         color: $text;
         margin: 0;
+        text-indent: 35px;
+        max-width: 630px;
     }
 }
 
@@ -529,13 +531,24 @@ footer {
         font-size: 1.2em;
         font-weight: 300;
         color: $heading3; //#ccbf46;
-        margin: 0 0 15px 0;
+        margin: 0 0 1px 8px;
     }
 
     p {
+        margin: 0 0 0 15px;
         color: $text;
         font-size: 0.9em;
-        margin: 0;
+    }
+
+    ul {
+        padding: 0 0 0 15px;
+        color: $text;
+        font-size: 0.9em;
+        list-style-type: circle;
+    }
+
+    tt, a {
+        color: $heading3;
     }
 }
 
@@ -616,17 +629,20 @@ footer {
         color: $heading3;
         clear: both;
         font-weight: 500;
-        margin: 0 0 15px 0;
+        margin: 15px 0 5px 8px;
     }
 
     p, ul {
-        margin: 0;
+        margin: 0 0 15px 15px;
         color: $text;
         font-size: 0.9em;
     }
 
     ul {
         padding: 0 0 0 15px;
+    }
+    tt, a, i {
+        color: $heading3;
     }
 }
 
