@@ -1,0 +1,812 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script src="chart.min.js"></script>
+    <script src="chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="suncalc.js"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+    <style>
+        .chartContainer {
+            background-color: #263238;
+            padding: 20px;
+        }
+        
+        body {
+            background-color: #263238;
+        }
+        
+        button {
+            display: inline-block;
+            padding: 0.3em;
+            border: 1px solid #222;
+            margin: 0 0.3em 0.3em 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 100;
+            color: #556F7B;
+            text-align: center;
+            transition: all 0.15s;
+            background-color: transparent;
+            border-radius: 10px;
+            font-size: 8pt;
+            box-shadow: 0 #000;
+            border-style: solid;
+        }
+        
+        button:hover {
+            color: #444;
+            border-color: #222;
+        }
+        
+        button:active {
+            color: #556F7B;
+            border-color: #222;
+            background-color: #333;
+        }
+        
+        a {
+            color: #556F7B;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+
+    <div class="chartContainer" style="width:100%;height:100%;">
+        <div id="buttonContainer" style="position:absolute;top:30;left:30;width: 100%;">
+            <center>
+                <div style="position:relative;width: 100%">
+                    <div style="float:left;">
+                        <button id="mm" type="button" onClick="(function () {changeMonths(-1);})()">m-</button>
+                        <button id="wm" type="button" onClick="(function () {changeDays(-7);})()">w-</button>
+                        <button id="dm" type="button" onClick="(function () {changeDays(-1);})()">d-</button></div>
+                    <div style="float:right;">
+                        <button id="dp" type="button" onClick="(function () {changeDays(+1);})()">d+</button>
+                        <button id="wp" type="button" onClick="(function () {changeDays(+7);})()">w+</button>
+                        <button id="mp" type="button" onClick="(function () {changeMonths(+1);})()">m+</button>
+                    </div>
+                </div>
+            </center>
+        </div>
+        <canvas id="myChart" width="600" height="400"></canvas>
+        <div style="position:absolute; bottom:30px; left: 50px;">
+            <a id="download" download="ChartImage.jpg" href="" class="btn btn-primary float-right bg-flat-color-1">
+                <i class="fa fa-download"></i>
+            </a>
+        </div>
+    </div>
+    <script>
+        // // TBD 
+        // if done dynamically there could be some get link for current date?
+        // format times
+
+        const zeroPad = (num, places) => String(num).padStart(places, '0');
+
+        function convertToDms(dd, isLng) {
+            var dir = dd < 0 ?
+                isLng ? 'W' : 'S' :
+                isLng ? 'E' : 'N';
+
+            var absDd = Math.abs(dd);
+            var deg = absDd | 0;
+            var frac = absDd - deg;
+            var min = (frac * 60) | 0;
+            var sec = frac * 3600 - min * 60;
+            // Round it to 2 decimal points.
+            sec = Math.round(sec * 100) / 100;
+            return dir + deg + "°" + zeroPad(min, 2) + "'" + zeroPad(sec, 2) + '"';
+        }
+
+        Date.prototype.addDays = function(days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+
+        Date.isLeapYear = function(year) {
+            return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
+        };
+
+        Date.getDaysInMonth = function(year, month) {
+            return [31, (Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+        };
+
+        Date.prototype.isLeapYear = function() {
+            return Date.isLeapYear(this.getFullYear());
+        };
+
+        Date.prototype.getDaysInMonth = function() {
+            return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
+        };
+
+        Date.prototype.addMonths = function(value) {
+            var n = this.getDate();
+            var m = this.getMonth();
+            this.setMonth(m + value);
+            if (this.getMonth() != m + value) {
+                this.setMonth(m + value);
+            }
+            this.setDate(Math.min(n, this.getDaysInMonth()));
+            return this;
+        };
+
+        function getGradient(times, timesnext, ctx, chartArea, gradient, start, stop, alpha = "FF") {
+            const chartWidth = chartArea.right - chartArea.left;
+            const chartHeight = chartArea.bottom - chartArea.top;
+            if (!gradient || width !== chartWidth || height !== chartHeight) {
+                // Create the gradient because this is either the first render
+                // or the size of the chart has changed
+
+                width = chartWidth;
+                height = chartHeight;
+
+                gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+
+
+                // TBD WHY MORNING / EVENING NOT SYMMETRIC?
+                // WHY JUMP IN GRADIENT?
+                var colors = ["#040815", "#08182A", "#152852", "#4B3D60", "#FD5E53", "#FC9C54", "#FFE373", "#B2FFFF"];
+                var limits = [-18, -12, -6, -0.833, -0.3, 6, 30, 90];
+                var names = ["nadir", "night", "nauticalDusk", "dusk", "sunset", "sunsetStart", "goldenHour", "solarNoon"];
+                var names2 = ["nadir", "nightEnd", "nauticalDawn", "dawn", "sunrise", "sunriseEnd", "goldenHourEnd", "solarNoon"];
+
+                for (let i = 0; i < colors.length - 1; i++) {
+                    if (times[names[i]]) {
+                        let relTime = (times[names[i]] - start) / (stop - start);
+                        if ((relTime >= 0 && relTime <= 1)) {
+                            gradient.addColorStop(relTime, colors[i].concat(alpha));
+                        }
+                    }
+                    if (timesnext[names[i]]) {
+                        let relTime = (timesnext[names2[i]] - start) / (stop - start);
+                        if ((relTime >= 0 && relTime <= 1)) {
+                            gradient.addColorStop(relTime, colors[i].concat(alpha));
+                        }
+                    }
+                }
+
+                var sunPos = SunCalc.getPosition(timesnext.nadir, lat, lon);
+                var sunAltitude1 = sunPos.altitude * 180 / Math.PI;
+                sunPos = SunCalc.getPosition(timesnext.solarNoon, lat, lon);
+                var sunAltitude2 = sunPos.altitude * 180 / Math.PI;
+
+                var noon = 0;
+                var nadir = 0;
+                for (let i = 0; i < limits.length; i++) {
+                    nadir = i;
+                    if (sunAltitude1 < limits[i]) {
+                        break;
+                    }
+                }
+                for (let i = 0; i < limits.length; i++) {
+                    noon = i;
+                    if (sunAltitude2 < limits[i]) {
+                        break;
+                    }
+                }
+                gradient.addColorStop((timesnext.nadir - start) / (stop - start), colors[nadir].concat(alpha));
+                gradient.addColorStop(0, colors[noon].concat(alpha));
+                gradient.addColorStop(1, colors[noon].concat(alpha));
+            }
+            return gradient;
+        }
+
+        function getArr(arr, prop) {
+            const newObj = [];
+            for (let i = 0; i < arr.length; i++) {
+                newObj.push(arr[i][prop]);
+            }
+            return newObj;
+        }
+
+        function getMoonGradient(moon_arr, ctx, chartArea, gradient, alpha = 1.0) {
+            const chartWidth = chartArea.right - chartArea.left;
+            const chartHeight = chartArea.bottom - chartArea.top;
+            if (!gradient || width !== chartWidth || height !== chartHeight) {
+                // Create the gradient because this is either the first render
+                // or the size of the chart has changed
+                width = chartWidth;
+                height = chartHeight;
+                var times = getArr(moon_arr, "x");
+                var altitudes = getArr(moon_arr, "y");
+                gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                var start = times[0];
+                var stop = times[times.length - 1];
+
+                var mid = new Date(start.valueOf() + (stop.valueOf() - start.valueOf()) / 2.0);
+
+                var illu = SunCalc.getMoonIllumination(mid).fraction * 255;
+                var illuStr = illu.toFixed(0);
+
+                var moonAltitude = altitudes[0];
+                if (moonAltitude < 0) {
+                    gradient.addColorStop(0, "rgba(0.0,0.0,0.0," + alpha + ")"); // adjust to illumination
+                } else {
+                    gradient.addColorStop(0, "rgba(" + illuStr + "," + illuStr + "," + illuStr + "," + alpha + ")");
+                }
+
+                moonAltitude = altitudes[altitudes.length - 1];
+
+                if (moonAltitude < 0) {
+                    gradient.addColorStop(1, "rgba(0.0,0.0,0.0," + alpha.toFixed(2) + ")"); // adjust to illumination
+                } else {
+                    gradient.addColorStop(1, "rgba(" + illuStr + "," + illuStr + "," + illuStr + "," + alpha.toFixed(2) + ")");
+                }
+                for (let i = 1; i < altitudes.length; i++) {
+                    if (moonAltitude * altitudes[i] < 0) {
+                        if (moonAltitude < 0) {
+                            gradient.addColorStop((times[i - 1] - start) / (stop - start), "rgba(0.0,0.0,0.0," + alpha.toFixed(2) + ")"); // adjust to illumination
+                            gradient.addColorStop((times[i] - start) / (stop - start), "rgba(" + illuStr + "," + illuStr + "," + illuStr + "," + alpha.toFixed(2) + ")");
+                        } else {
+                            gradient.addColorStop((times[i - 1] - start) / (stop - start), "rgba(" + illuStr + "," + illuStr + "," + illuStr + "," + alpha.toFixed(2) + ")");
+                            gradient.addColorStop((times[i] - start) / (stop - start), "rgba(0.0,0.0,0.0," + alpha.toFixed(2) + ")"); // adjust to illumination
+                        }
+                    }
+                    moonAltitude = altitudes[i];
+                }
+            }
+            return gradient;
+        }
+        // option to draw from midday to midday or dusk to dawn etc // this would i guess solve the problem with order of things
+        // noon color??
+        var bC = document.getElementById("buttonContainer");
+
+        function setupGraph() {
+            var c = document.getElementById('myChart');
+            var ctx = c.getContext("2d");
+            var width = window.innerWidth || document.body.clientWidth;
+
+
+            const chartAreaBorder = {
+                id: 'chartAreaBorder',
+                beforeDraw(chart, args, options) {
+                    const {
+                        ctx,
+                        chartArea: {
+                            left,
+                            top,
+                            width,
+                            height
+                        }
+                    } = chart;
+                    ctx.save();
+                    ctx.strokeStyle = options.borderColor;
+                    ctx.lineWidth = options.borderWidth;
+                    ctx.setLineDash(options.borderDash || []);
+                    ctx.lineDashOffset = options.borderDashOffset;
+                    ctx.strokeRect(left, top, width, height);
+
+                    bC.style.setProperty('left', left + 30 + 'px');
+                    bC.style.setProperty('width', width + 'px');
+                    bC.style.setProperty('top', top + 2 + 'px');
+
+                    ctx.restore();
+                }
+            };
+            const myChart = new Chart(ctx, {
+                type: 'line',
+
+                data: {
+                    datasets: [{
+                        ylabel: 'Altitude',
+                        data: [{
+                            x: new Date(),
+                            y: 0,
+                        }],
+                        label: 'Sun',
+                        /*borderColor: myGradient,
+                        pointBorderColor: myGradient,
+                        pointBackgroundColor: myGradient,
+                        pointHoverBackgroundColor: myGradient,
+                        pointHoverBorderColor: myGradient,
+                        backgroundColor: myGradient55,*/
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 8,
+                        pointHoverBorderWidth: 1,
+                        pointRadius: 1,
+                        fill: true,
+                        borderWidth: 4,
+                    }, {
+                        ylabel: 'Altitude',
+                        data: [{
+                            x: new Date(),
+                            y: 0,
+                        }],
+                        label: 'Moon',
+                        /*borderColor: myMoonGradient,
+                        pointBorderColor: myMoonGradient,
+                        pointBackgroundColor: myMoonGradient,
+                        pointHoverBackgroundColor: myMoonGradient,
+                        pointHoverBorderColor: myMoonGradient,
+                        backgroundColor: myMoonGradient55,*/
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 8,
+                        pointHoverBorderWidth: 1,
+                        pointRadius: 1,
+                        fill: true,
+                        borderWidth: 4,
+                    }]
+                },
+                plugins: [chartAreaBorder],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        position: "none"
+                    },
+                    layout: {
+                        padding: {
+                            left: 0,
+                            top: -10,
+                            right: 10,
+                            bottom: 10
+                        }
+                    },
+                    plugins: {
+                        chartAreaBorder: {
+                            borderColor: "#556F7B",
+                            borderWidth: 2,
+                        },
+                        title: {
+                            display: true,
+                            text: "", //start.toISOString().split('T')[0],
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    hover: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Altitude",
+                            },
+                            ticks: {
+                                textStrokeColor: "#556F7B",
+                                padding: 10
+                            },
+                            grid: {
+                                drawTicks: true,
+                                display: true,
+                                drawBorder: true
+                            },
+                            min: -95,
+                            max: 95
+
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Local time",
+                                tooltipFormat: 'YYYY/MM/DD HH:mm',
+                                displayFormats: {
+                                    second: 'HH:mm:ss',
+                                    minute: 'HH:mm',
+                                    hour: 'HH',
+                                    day: 'HH',
+                                },
+                            },
+                            type: 'time',
+                            ticks: {
+                                padding: 5,
+                                textStrokeColor: "#556F7B",
+                            },
+                            grid: {
+                                drawTicks: true,
+                                display: true,
+                                drawBorder: true
+                            }
+                        }
+                    },
+                    animation: {
+                        onComplete: function() {
+                            var url_base64jp = document.getElementById("myChart").toDataURL("image/jpg");
+                            var a = document.getElementById("download");
+                            a.href = url_base64jp;
+                        }
+                    }
+                }
+            });
+            return myChart;
+        }
+
+        function updateGraph(graph, _time, _lat, _lon) {
+            graph.options.plugins.title.text = _time.toISOString().split('T')[0] + "  -  " + convertToDms(_lat, false) + " " + convertToDms(_lon, true);
+            var times = SunCalc.getTimes(_time, _lat, _lon);
+            var timesnext = SunCalc.getTimes(_time.addDays(1), _lat, _lon);
+
+            var sun_arr = [];
+            var moon_arr = [];
+            window.sun_azimuth = [];
+            window.moon_azimuth = [];
+            var start = times.solarNoon;
+            var stop = timesnext.solarNoon;
+            var j = 1;
+
+            for (let i = start.valueOf(); i <= stop.valueOf(); i += 15 * 60 * 1000) {
+                let __time = new Date(i);
+                var sunPos = SunCalc.getPosition(__time, _lat, _lon);
+                var moonPos = SunCalc.getMoonPosition(__time, _lat, _lon);
+
+                // get sunrise azimuth in degrees
+                var sunAzimuth = sunPos.azimuth * 180 / Math.PI;
+                var sunAltitude = sunPos.altitude * 180 / Math.PI;
+                var moonAltitude = moonPos.altitude * 180 / Math.PI;
+                var moonAzimuth = moonPos.azimuth * 180 / Math.PI;
+
+                window.sun_azimuth.push(sunAzimuth);
+                window.moon_azimuth.push(moonAzimuth);
+                sun_arr.push({
+                    x: __time,
+                    y: sunAltitude,
+                    az: sunAzimuth
+                });
+                moon_arr.push({
+                    x: __time,
+                    y: moonAltitude,
+                    az: moonAzimuth
+                });
+            }
+
+            graph.data.datasets[0].data = sun_arr;
+            graph.data.datasets[1].data = moon_arr;
+
+            var mid = new Date(start.valueOf() + (stop.valueOf() - start.valueOf()) / 2.0);
+            var illu = SunCalc.getMoonIllumination(mid).fraction * 100;
+            var illuStr = illu.toFixed(0);
+            graph.options.plugins.tooltip.callbacks.footer = function(tooltipItem, data) {
+                let label = '';
+                if (data) {
+                    label = data.datasets[tooltipItem.datasetIndex].label || '';
+                }
+                label += "Illumination: " + illuStr + "%";
+                return label;
+            };
+            graph.options.plugins.tooltip.callbacks.label = function(tooltipItem, data) {
+                let label = tooltipItem.formattedValue;
+                if (tooltipItem.dataset) {
+                    if (tooltipItem.datasetIndex == 0) {
+                        label = "  Sun: alt " + tooltipItem.dataset.data[tooltipItem.dataIndex].y.toFixed(0) + "° az " + (tooltipItem.dataset.data[tooltipItem.dataIndex].az + 180).toFixed(0) + "°";
+                    } else if (tooltipItem.datasetIndex == 1) {
+                        label = "  Moon: alt " + tooltipItem.dataset.data[tooltipItem.dataIndex].y.toFixed(0) + "° az " + (tooltipItem.dataset.data[tooltipItem.dataIndex].az + 180).toFixed(0) + "°";
+                    }
+                }
+
+                return label;
+            };
+            //data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            var gradientStroke;
+            var gradientMoonStroke;
+            var gradientFill;
+            var gradientMoonFill;
+            var myGradient = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+                return getGradient(times, timesnext, ctx, chartArea, gradientStroke, start, stop);
+            };
+            var myGradient55 = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+                return getGradient(times, timesnext, ctx, chartArea, gradientFill, start, stop, "55");
+            };
+
+            var myMoonGradient = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+
+                return getMoonGradient(moon_arr, ctx, chartArea, gradientMoonStroke);
+            };
+            var myMoonGradient55 = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+                return getMoonGradient(moon_arr, ctx, chartArea, gradientMoonFill, 0.3);
+            };
+
+            graph.data.datasets[0].pointBorderColor = myGradient;
+            graph.data.datasets[0].backgroundColor = myGradient55;
+            graph.data.datasets[0].borderColor = myGradient;
+            graph.data.datasets[0].pointBorderColor = myGradient;
+            graph.data.datasets[0].pointBackgroundColor = myGradient55;
+            graph.data.datasets[0].pointHoverBackgroundColor = myGradient55;
+            graph.data.datasets[0].pointHoverBorderColor = myGradient;
+
+            graph.data.datasets[1].pointBorderColor = myMoonGradient;
+            graph.data.datasets[1].backgroundColor = myMoonGradient55;
+            graph.data.datasets[1].borderColor = myMoonGradient;
+            graph.data.datasets[1].pointBorderColor = myMoonGradient;
+            graph.data.datasets[1].pointBackgroundColor = myMoonGradient55;
+            graph.data.datasets[1].pointHoverBackgroundColor = myMoonGradient55;
+            graph.data.datasets[1].pointHoverBorderColor = myMoonGradient;
+            graph.update();
+            return _time;
+            // gradients
+
+
+            /*
+            var gradientStroke;
+            var gradientMoonStroke;
+            var gradientFill;
+            var gradientMoonFill;
+            var myGradient = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+                return getGradient(times, timesnext, ctx, chartArea, gradientStroke, start, stop);
+            };
+            var myGradient55 = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+                return getGradient(times, timesnext, ctx, chartArea, gradientFill, start, stop, "55");
+            };
+
+            var myMoonGradient = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+
+                return getMoonGradient(moon_arr, ctx, chartArea, gradientMoonStroke);
+            };
+            var myMoonGradient55 = function(context) {
+                const chart = context.chart;
+                const {
+                    ctx,
+                    chartArea
+                } = chart;
+
+                if (!chartArea) {
+                    // This case happens on initial chart load
+                    return;
+                }
+                return getMoonGradient(moon_arr, ctx, chartArea, gradientMoonFill, 0.3);
+            };
+            const chartAreaBorder = {
+                id: 'chartAreaBorder',
+                beforeDraw(chart, args, options) {
+                    const {
+                        ctx,
+                        chartArea: {
+                            left,
+                            top,
+                            width,
+                            height
+                        }
+                    } = chart;
+                    ctx.save();
+                    ctx.strokeStyle = options.borderColor;
+                    ctx.lineWidth = options.borderWidth;
+                    ctx.setLineDash(options.borderDash || []);
+                    ctx.lineDashOffset = options.borderDashOffset;
+                    ctx.strokeRect(left, top, width, height);
+                    ctx.restore();
+                }
+            };
+            const myChart = new Chart(ctx, {
+                type: 'line',
+
+                data: {
+                    datasets: [{
+                        ylabel: 'Altitude',
+                        data: sun_arr,
+                        label: 'Sun',
+                        borderColor: myGradient,
+                        pointBorderColor: myGradient,
+                        pointBackgroundColor: myGradient,
+                        pointHoverBackgroundColor: myGradient,
+                        pointHoverBorderColor: myGradient,
+                        backgroundColor: myGradient55,
+                        pointBorderWidth: 8,
+                        pointHoverRadius: 8,
+                        pointHoverBorderWidth: 1,
+                        pointRadius: 1,
+                        fill: true,
+                        borderWidth: 4,
+                    }, {
+                        ylabel: 'Altitude',
+                        data: moon_arr,
+                        label: 'Moon',
+                        borderColor: myMoonGradient,
+                        pointBorderColor: myMoonGradient,
+                        pointBackgroundColor: myMoonGradient,
+                        pointHoverBackgroundColor: myMoonGradient,
+                        pointHoverBorderColor: myMoonGradient,
+                        backgroundColor: myMoonGradient55,
+                        pointBorderWidth: 8,
+                        pointHoverRadius: 8,
+                        pointHoverBorderWidth: 1,
+                        pointRadius: 1,
+                        fill: true,
+                        borderWidth: 4,
+                    }]
+                },
+                plugins: [chartAreaBorder],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        position: "none"
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            top: -10,
+                            right: 10,
+                            bottom: 10
+                        }
+                    },
+                    plugins: {
+                        chartAreaBorder: {
+                            borderColor: "#556F7B",
+                            borderWidth: 2,
+                        },
+                        title: {
+                            display: true,
+                            text: start.toISOString().split('T')[0],
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Altitude",
+                            },
+                            ticks: {
+                                textStrokeColor: "#556F7B",
+                                padding: 20
+                            },
+                            grid: {
+                                drawTicks: true,
+                                display: true,
+                                drawBorder: true
+                            }
+
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Time",
+                            },
+                            type: 'time',
+                            ticks: {
+                                padding: 20,
+                                textStrokeColor: "#556F7B",
+                            },
+                            grid: {
+                                drawTicks: true,
+                                display: true,
+                                drawBorder: true
+                            }
+                        }
+                    }
+                }
+            });*/
+        }
+        var altChart = setupGraph();
+
+        window.lat = 5.;
+        window.lon = 25.5;
+        //var $_GET = <?php echo json_encode($_GET); ?>;
+        window.$_GET = location.search.substr(1).split("&").reduce((o, i) => (u = decodeURIComponent, [k, v] = i.split("="), o[u(k)] = v && u(v), o), {});
+
+
+        window.time = new Date();
+        if ($_GET['y'] && $_GET['m'] && $_GET['d']) {
+            time = new Date($_GET['y'], $_GET['m'] - 1, $_GET['d']);
+        }
+        var geo = true;
+        if ($_GET['lon']) {
+            lon = $_GET['lon']
+        } else {
+            geo = false;
+        }
+        if ($_GET['lat']) {
+            lat = $_GET['lat']
+        } else {
+            geo = false;
+        }
+
+        if (!geo) {
+            if (!navigator.geolocation) {
+                updateGraph(altChart, time, lat, lon);
+            } else {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                    updateGraph(altChart, time, lat, lon);
+                }, function() {
+                    updateGraph(altChart, time, lat, lon);
+                });
+
+            }
+        } else {
+            updateGraph(altChart, time, lat, lon);
+        }
+
+        function changeDays(days) {
+            var newTime = new Date(window.time.valueOf());
+            newTime.setDate(window.time.getDate() + days);
+            window.time = updateGraph(altChart, newTime, window.lat, window.lon);
+        }
+
+        function changeMonths(month) {
+            var newTime = new Date(window.time.valueOf());
+            newTime.addMonths(month);
+            window.time = updateGraph(altChart, newTime, lat, lon);
+        }
+
+        //document.getElementById("download").addEventListener('click', function() {
+        /*Get image of canvas element*/
+        //    var url_base64jp = document.getElementById("myChart").toDataURL("image/jpg");
+        /*get download button (tag: <a></a>) */
+        //    var a = document.getElementById("download");
+        /*insert chart image url to download button (tag: <a></a>) */
+        //    a.href = url_base64jp;
+        //});
+    </script>
+
+</body>
+
+</html>
