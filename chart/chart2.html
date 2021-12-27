@@ -155,7 +155,7 @@
                 var names = ["nadir", "night", "nauticalDusk", "dusk", "sunset", "sunsetStart", "goldenHour", "solarNoon"];
                 var names2 = ["nadir", "nightEnd", "nauticalDawn", "dawn", "sunrise", "sunriseEnd", "goldenHourEnd", "solarNoon"];
 
-                for (let i = 0; i < colors.length - 1; i++) {
+                for (let i = 1; i < colors.length - 1; i++) {
                     if (times[names[i]]) {
                         let relTime = (times[names[i]] - start) / (stop - start);
                         if ((relTime >= 0 && relTime <= 1)) {
